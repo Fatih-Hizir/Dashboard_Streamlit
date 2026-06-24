@@ -59,7 +59,8 @@ footer { visibility: hidden; }
 }
 
 /* ── 1. KPI CARDS SYSTEM ── */
-.st-key-card_kpi_1, .st-key-card_kpi_2, .st-key-card_kpi_3, .st-key-card_kpi_4, .st-key-card_kpi_5 {
+.st-key-card_kpi_1, .st-key-card_kpi_2, .st-key-card_kpi_3, .st-key-card_kpi_4, .st-key-card_kpi_5,
+.st-key-kpi_comp_1, .st-key-kpi_comp_2, .st-key-kpi_comp_3, .st-key-kpi_comp_4 {
     background-color : #FFFFFF !important; border-radius : 20px !important; border : none !important;
     box-shadow : 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03) !important;
     padding : 1.5rem !important; transition : all 0.3s ease; height : 150px !important; display : flex !important; align-items : center !important; 
@@ -71,7 +72,7 @@ footer { visibility: hidden; }
 .st-key-geomap_card, .st-key-p2_large_card_1,
 .st-key-p2_card_filter, .st-key-p2_card_heatmap, .st-key-p2_card_bullet,
 .st-key-p1_card_bubble, .st-key-p1_card_persona,
-.st-key-p3_card_bar, .st-key-p3_card_radar, .st-key-p3_card_filter, .st-key-p3_card_heatmap { /* <--- TAMBAHAN PAGE 3 */
+.st-key-p3_card_bar, .st-key-p3_card_radar, .st-key-p3_card_filter, .st-key-p3_card_heatmap {
     background-color : #FCFDFF !important; border-radius : 20px !important; border : none !important;
     box-shadow : 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03) !important;
     padding : 1.5rem !important; transition : all 0.3s ease;
@@ -82,13 +83,14 @@ footer { visibility: hidden; }
 
 /* ── 3. EFFECT HOVER ── */
 .st-key-card_kpi_1:hover, .st-key-card_kpi_2:hover, .st-key-card_kpi_3:hover, .st-key-card_kpi_4:hover, .st-key-card_kpi_5:hover,
+.st-key-kpi_comp_1:hover, .st-key-kpi_comp_2:hover, .st-key-kpi_comp_3:hover, .st-key-kpi_comp_4:hover,
 .st-key-large_card_1:hover, .st-key-large_card_2:hover, .st-key-medium_card_1:hover, .st-key-medium_card_2:hover,
 .st-key-geomap_card:hover, .st-key-p2_large_card_1:hover,
 .st-key-p2_card_filter:hover, .st-key-p2_card_heatmap:hover, .st-key-p2_card_bullet:hover,
 .st-key-p1_card_bubble:hover, .st-key-p1_card_persona:hover,
-.st-key-p3_card_bar:hover, .st-key-p3_card_radar:hover, .st-key-p3_card_filter:hover, .st-key-p3_card_heatmap:hover { /* <--- TAMBAHAN PAGE 3 */
+.st-key-p3_card_bar:hover, .st-key-p3_card_radar:hover, .st-key-p3_card_filter:hover, .st-key-p3_card_heatmap:hover { 
     transform : translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-}}
+}
 
 /* ── TYPOGRAPHY & OTHERS ── */
 .kpi-title { font-size: 14px; font-weight: 600; color: #5E6677; letter-spacing: -0.2px; }
