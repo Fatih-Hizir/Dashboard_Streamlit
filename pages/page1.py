@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
+
 from helpers.loader import load_data
+from components.sidebar import apply_global_filters
 
 from components.kpi_cards import (
     render_total_respondents_kpi,
@@ -24,7 +26,13 @@ from components.persona_card import render_persona_dashboard
 # DATA
 ##################################################################
 
-df = load_data()
+df = apply_global_filters(load_data())
+if df.empty:
+    st.warning(
+        "No respondents match the currently selected sidebar filters. "
+        "Reset or adjust the filters to display this page."
+    )
+    st.stop()
 
 @st.cache_data
 def get_exploded_data(data):
@@ -116,18 +124,21 @@ df_exploded = get_exploded_data(df)
 # PAGE TITLE
 ##################################################################
 
-st.title("Customer Profile Dashboard")
+st.title("Respondent Profile")
+st.caption(
+    "Demographic, financial, behavioral, geographic, and persona overview of Bank XYZ respondents."
+)
 
 st.markdown(
-    "<div style='height:10px;'></div>",
-    unsafe_allow_html=True
+    "<div style='height:8px;'></div>",
+    unsafe_allow_html=True,
 )
 
 ##################################################################
 # ROW 1 — KPI CARDS
 ##################################################################
 
-kpi_cols = st.columns(5)
+kpi_cols = st.columns(5, gap="medium")
 
 with kpi_cols[0]:
     with st.container(key="card_kpi_1"):
@@ -170,7 +181,7 @@ st.markdown(
 # ROW 3 — LARGE CONTAINERS
 ##################################################################
 
-row3_col1, row3_col2 = st.columns(2)
+row3_col1, row3_col2 = st.columns(2, gap="large")
 
 with row3_col1:
     with st.container(key="large_card_1"):
@@ -189,7 +200,7 @@ st.markdown(
 # ROW 4 — MEDIUM CONTAINERS
 ##################################################################
 
-row4_col1, row4_col2 = st.columns(2)
+row4_col1, row4_col2 = st.columns(2, gap="large")
 
 with row4_col1:
     with st.container(key="medium_card_1"):
@@ -202,5 +213,5 @@ with row4_col2:
 # ---------------------------------------------------------------------------
 # 4. INTERACTIVE BUBBLE CLUSTER & PERSONA MAPPING
 # ---------------------------------------------------------------------------
-# Menjalankan fungsi visualisasi dinamis yang ada di komponen persona_card.py
+# Render the interactive persona segmentation and customer-motivation view.
 render_persona_dashboard(df_exploded)

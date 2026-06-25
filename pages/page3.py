@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from helpers.loader import load_data
+from components.sidebar import apply_global_filters
 
 from components.competitor_chart import (
     render_competitor_kpis,
@@ -13,7 +14,13 @@ from components.competitor_chart import (
 # DATA
 ##################################################################
 
-df = load_data()
+df = apply_global_filters(load_data())
+if df.empty:
+    st.warning(
+        "No respondents match the currently selected sidebar filters. "
+        "Reset or adjust the filters to display this page."
+    )
+    st.stop()
 
 # Logic Cerdas: Mengamankan path pembacaan file mapping kompetitor
 path_1 = "data/Kompetitor Mapping.csv"
