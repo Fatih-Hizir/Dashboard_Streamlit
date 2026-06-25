@@ -290,6 +290,44 @@ SIDEBAR_CSS = """
     box-shadow: 0 0 0 3px rgba(47,191,113,.12);
 }
 
+/* --- Custom Manual Nav --- */
+.cx-manual-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 4px 0 18px 0;
+}
+
+.cx-manual-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-height: 44px;
+    padding: 10px 13px;
+    border-radius: 11px;
+    border: 1px solid rgba(0,105,255,.10);
+    background: transparent;
+    color: #5E6677 !important;
+    text-decoration: none !important;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+
+.cx-manual-nav-link:hover {
+    background: #F3F7FF;
+    transform: translateX(2px);
+    box-shadow: 0 7px 16px rgba(0,105,255,.10);
+    color: #0069FF !important;
+}
+
+.cx-manual-nav-link .material-symbols-rounded {
+    font-size: 21px;
+    color: #0069FF;
+    flex-shrink: 0;
+}
+
 [data-testid="stSidebarCollapseButton"],
 [data-testid="collapsedControl"],
 [data-testid="stSidebarResizer"] {
@@ -381,20 +419,24 @@ def render_sidebar(df: pd.DataFrame | None = None) -> dict[str, list[str]]:
             unsafe_allow_html=True,
         )
 
-        st.page_link(
-            "pages/page1.py",
-            label="Respondent Profile",
-            icon=":material/groups:",
-        )
-        st.page_link(
-            "pages/page2.py",
-            label="Bank XYZ Performance",
-            icon=":material/account_balance:",
-        )
-        st.page_link(
-            "pages/page3.py",
-            label="Competitor Performance",
-            icon=":material/compare_arrows:",
+        st.markdown(
+            """
+            <div class="cx-manual-nav">
+                <a class="cx-manual-nav-link" href="/page1" target="_self">
+                    <span class="material-symbols-rounded">groups</span>
+                    <span>Respondent Profile</span>
+                </a>
+                <a class="cx-manual-nav-link" href="/page2" target="_self">
+                    <span class="material-symbols-rounded">account_balance</span>
+                    <span>Bank XYZ Performance</span>
+                </a>
+                <a class="cx-manual-nav-link" href="/page3" target="_self">
+                    <span class="material-symbols-rounded">compare_arrows</span>
+                    <span>Competitor Performance</span>
+                </a>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
         st.markdown(
