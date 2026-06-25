@@ -79,7 +79,7 @@ def load_data() -> pd.DataFrame:
     2. Kolom tambahan: cabang_label, nps_xyz_class, nps_kompetitor_class
     3. Kolom shorthand untuk kolom yang sering dipakai di dashboard
 
-    Gunakan fungsi ini di semua page.
+    Fungsi ini dipanggil sekali oleh app.py dan hasilnya dibagikan ke setiap page.
     """
     df           = load_raw_data().copy()
     mapping_dict = build_metadata_mapping()

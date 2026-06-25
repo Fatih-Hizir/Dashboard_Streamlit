@@ -9,6 +9,27 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
+import base64
+from pathlib import Path
+ASSET_DIR = Path(__file__).resolve().parents[1] / "assets"
+
+
+def _asset_data_uri(filename: str) -> str:
+    asset_path = ASSET_DIR / filename
+    if not asset_path.exists():
+        return ""
+    encoded = base64.b64encode(asset_path.read_bytes()).decode("utf-8")
+    return f"data:image/png;base64,{encoded}"
+
+
+def _kpi_asset(filename: str, alt_text: str) -> str:
+    uri = _asset_data_uri(filename)
+    if not uri:
+        return ""
+    return (
+        f'<img src="{uri}" alt="{alt_text}" '
+        'style="width:72px;height:72px;object-fit:contain;display:block;" />'
+    )
 
 # ---------------------------------------------------------------------------
 # 1. CORPORATE DESIGN SYSTEM & COLOR PALETTE
@@ -94,23 +115,23 @@ def render_scorecards_2a(df, branch_summary):
     avg_csi = branch_summary['CSI'].mean()
     avg_nps = branch_summary['NPS'].mean()
 
-    def build_kpi_html(icon, title, value, subtitle=""):
+    def build_kpi_html(icon_html, title, value, subtitle=""):
         return (
-            '<div style="display:flex;align-items:center;gap:14px;height:94px;width:100%;">'
-                '<div style="width:52px;height:52px;border-radius:16px;flex-shrink:0;'
-                'display:flex;align-items:center;justify-content:center;'
-                f'background:linear-gradient(145deg,{PRIMARY_300},{ACCENT_200});'
-                f'box-shadow:0 8px 18px rgba(187,38,73,0.14);color:{PRIMARY_100};">'
-                    f'<span class="material-symbols-rounded" style="font-size:27px!important;">{icon}</span>'
+            '<div style="display:flex;align-items:center;gap:16px;min-height:116px;width:100%;padding:6px 2px;">'
+                '<div style="width:76px;height:76px;flex-shrink:0;'
+                'display:flex;align-items:center;justify-content:center;">'
+                    f'{icon_html}'
                 '</div>'
                 '<div style="display:flex;flex-direction:column;align-items:flex-start;'
                 'justify-content:center;min-width:0;">'
-                    f'<div class="kpi-title" style="margin-bottom:3px;font-size:12px;'
-                    f'text-transform:uppercase;color:{TEXT_SECONDARY};">{title}</div>'
+                    f'<div class="kpi-title" style="margin-bottom:5px;font-size:12px;'
+                    f'text-transform:uppercase;color:{TEXT_SECONDARY};white-space:normal;'
+                    f'line-height:1.25;overflow-wrap:anywhere;">{title}</div>'
                     f'<div class="kpi-value-large" style="font-size:27px;line-height:1.05;'
-                    f'font-weight:800;color:{TEXT_PRIMARY};">{value}</div>'
-                    f'<div class="kpi-subtitle" style="margin-top:5px;font-size:11px;'
-                    f'font-weight:600;color:{PRIMARY_100};">{subtitle}</div>'
+                    f'font-weight:800;color:{TEXT_PRIMARY};white-space:nowrap;">{value}</div>'
+                    f'<div class="kpi-subtitle" style="margin-top:6px;font-size:11px;'
+                    f'font-weight:600;color:{PRIMARY_100};white-space:normal;line-height:1.3;'
+                    f'overflow-wrap:anywhere;">{subtitle}</div>'
                 '</div>'
             '</div>'
         )
@@ -119,7 +140,7 @@ def render_scorecards_2a(df, branch_summary):
         with st.container(key="card_kpi_1"):
             st.markdown(
                 build_kpi_html(
-                    "groups",
+                    _kpi_asset("bank.png", "Total respondents"),
                     "Total Respondents",
                     f"{total_resp:,}",
                     "All survey records",
@@ -131,7 +152,7 @@ def render_scorecards_2a(df, branch_summary):
         with st.container(key="card_kpi_2"):
             st.markdown(
                 build_kpi_html(
-                    "account_balance",
+                    _kpi_asset("cabang.png", "Total branches"),
                     "Total Branches",
                     f"{total_branch:,}",
                     "Active branches",
@@ -143,7 +164,7 @@ def render_scorecards_2a(df, branch_summary):
         with st.container(key="card_kpi_3"):
             st.markdown(
                 build_kpi_html(
-                    "monitoring",
+                    _kpi_asset("csi.png", "Customer satisfaction index"),
                     "National Avg. CSI",
                     f"{avg_csi:.1f}%",
                     "IPA weighting",
@@ -155,7 +176,7 @@ def render_scorecards_2a(df, branch_summary):
         with st.container(key="card_kpi_4"):
             st.markdown(
                 build_kpi_html(
-                    "thumb_up",
+                    _kpi_asset("nps.png", "Net promoter score"),
                     "National Avg. NPS",
                     f"{avg_nps:.1f}",
                     "Net Promoter Score",

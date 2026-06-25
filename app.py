@@ -1,8 +1,11 @@
 
 import streamlit as st
 
-from helpers.loader import load_data
 from components.sidebar import render_sidebar
+from helpers.loader import load_data
+from pages.page1 import render_page as render_respondent_profile
+from pages.page2 import render_page as render_bank_performance
+from pages.page3 import render_page as render_competitor_performance
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -33,6 +36,8 @@ st.markdown(
         --cx-blue-dark: #0055D4;
         --cx-red: #BB2649;
         --cx-red-soft: #FFF0F4;
+        --cx-red-dark: #9F1F3E;
+        --cx-red-border: #FFC3D4;
         --cx-green: #2FBF71;
         --cx-text-primary: #1D2433;
         --cx-text-secondary: #5E6677;
@@ -87,6 +92,19 @@ st.markdown(
 
     [data-testid="stHeader"] {
         background: transparent !important;
+    }
+
+    /* Hide Streamlit's automatic pages navigation. */
+    [data-testid="stSidebarNav"],
+    [data-testid="stSidebarNavItems"],
+    section[data-testid="stSidebar"] nav {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
     }
 
     .block-container {
@@ -248,15 +266,15 @@ st.markdown(
     }
 
     .main div.stRadio > div[role="radiogroup"] label:hover {
-        border-color: rgba(0, 105, 255, 0.35);
-        background: #F4F8FF;
+        border-color: var(--cx-red-border);
+        background: var(--cx-red-soft);
     }
 
     .main div.stRadio > div[role="radiogroup"] label:has(input:checked) {
         color: #FFFFFF !important;
-        background: linear-gradient(135deg, var(--cx-blue), var(--cx-blue-dark)) !important;
+        background: linear-gradient(135deg, var(--cx-red), var(--cx-red-dark)) !important;
         border-color: transparent !important;
-        box-shadow: 0 7px 16px rgba(0, 105, 255, 0.20);
+        box-shadow: 0 7px 16px rgba(187, 38, 73, 0.20);
     }
 
     .main div.stRadio > div[role="radiogroup"] label:has(input:checked) p {
@@ -281,35 +299,37 @@ st.markdown(
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 3. SHARED SIDEBAR
+# 3. CENTRALIZED APPLICATION DATA
+# Load the source dataframe once per user session and share it with every page.
 # ──────────────────────────────────────────────────────────────────────────────
-sidebar_df = load_data()
-render_sidebar(sidebar_df)
+if "cx_source_df" not in st.session_state:
+    st.session_state["cx_source_df"] = load_data()
+
+app_df = st.session_state["cx_source_df"]
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 4. PAGE ROUTING
-# Native navigation is hidden because the custom sidebar renders the page links.
+# 4. SHARED SIDEBAR
+# The sidebar is rendered once by the application shell, not by individual pages.
 # ──────────────────────────────────────────────────────────────────────────────
-pg = st.navigation(
-    [
-        st.Page(
-            "pages/page1.py",
-            title="Respondent Profile",
-            icon=":material/groups:",
-        ),
-        st.Page(
-            "pages/page2.py",
-            title="Bank XYZ Performance",
-            icon=":material/account_balance:",
-        ),
-        st.Page(
-            "pages/page3.py",
-            title="Competitor Performance",
-            icon=":material/compare_arrows:",
-        ),
-    ],
-    position="hidden",
+render_sidebar(app_df)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 5. CENTRALIZED PAGE ROUTING
+# Render pages directly from session state to avoid browser-level page reloads.
+# ──────────────────────────────────────────────────────────────────────────────
+current_page = st.session_state.get(
+    "cx_current_page",
+    "respondent_profile",
 )
 
-pg.run()
+if current_page == "respondent_profile":
+    render_respondent_profile(app_df)
+elif current_page == "bank_performance":
+    render_bank_performance(app_df)
+elif current_page == "competitor_performance":
+    render_competitor_performance(app_df)
+else:
+    st.session_state["cx_current_page"] = "respondent_profile"
+    st.rerun()

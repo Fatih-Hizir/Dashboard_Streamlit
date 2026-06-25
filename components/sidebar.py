@@ -15,6 +15,8 @@ import streamlit as st
 FILTER_PREFIX = "cx_sidebar_"
 APPLIED_FILTER_KEY = f"{FILTER_PREFIX}applied_filters"
 INITIALIZED_KEY = f"{FILTER_PREFIX}initialized"
+CURRENT_PAGE_KEY = "cx_current_page"
+DEFAULT_PAGE = "respondent_profile"
 
 COLUMN_CANDIDATES = {
     "province": ["provinsi_label", "Provinsi"],
@@ -36,8 +38,8 @@ SIDEBAR_CSS = """
 <style>
 [data-testid="stSidebar"] {
     background:
-        radial-gradient(circle at 0% 0%, rgba(0,105,255,.07), transparent 30%),
-        linear-gradient(180deg, #FFFFFF 0%, #FFF9FB 100%) !important;
+        radial-gradient(circle at 0% 0%, rgba(187,38,73,.09), transparent 30%),
+        linear-gradient(180deg, #FFFFFF 0%, #FFF7FA 100%) !important;
     border-right: 1px solid rgba(29,36,51,.06) !important;
     min-width: 17.25rem !important;
     max-width: 17.25rem !important;
@@ -64,8 +66,8 @@ SIDEBAR_CSS = """
     padding: 13px 13px 12px 13px;
     margin: 0 0 9px 0;
     border-radius: 15px;
-    background: linear-gradient(135deg, #FFFFFF 0%, #F4F8FF 100%);
-    border: 1px solid rgba(0,105,255,.10);
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFF1F5 100%);
+    border: 1px solid rgba(187,38,73,.12);
     box-shadow: 0 8px 20px rgba(29,36,51,.05);
 }
 
@@ -77,7 +79,7 @@ SIDEBAR_CSS = """
     border-radius: 50%;
     right: -30px;
     top: -32px;
-    background: linear-gradient(135deg, rgba(0,105,255,.18), rgba(187,38,73,.10));
+    background: linear-gradient(135deg, rgba(243,93,116,.20), rgba(187,38,73,.14));
 }
 
 .cx-brand-row {
@@ -97,8 +99,8 @@ SIDEBAR_CSS = """
     border-radius: 11px;
     color: #FFFFFF;
     font-size: 19px;
-    background: linear-gradient(145deg, #2F80FF 0%, #0069FF 100%);
-    box-shadow: 0 7px 15px rgba(0,105,255,.22);
+    background: linear-gradient(145deg, #F35D74 0%, #BB2649 100%);
+    box-shadow: 0 7px 15px rgba(187,38,73,.22);
 }
 
 .cx-brand-title {
@@ -134,42 +136,6 @@ SIDEBAR_CSS = """
     height: 1px;
     flex: 1;
     background: linear-gradient(90deg, rgba(29,36,51,.10), transparent);
-}
-
-[data-testid="stSidebar"] [data-testid="stPageLink"] {
-    margin-bottom: 4px !important;
-}
-
-[data-testid="stSidebar"] [data-testid="stPageLink"] a {
-    min-height: 39px !important;
-    border-radius: 11px !important;
-    padding: 7px 10px !important;
-    background: transparent !important;
-    border: 1px solid transparent !important;
-    transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease !important;
-}
-
-[data-testid="stSidebar"] [data-testid="stPageLink"] a:hover {
-    background: #F3F7FF !important;
-    transform: translateX(2px);
-}
-
-[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current="page"] {
-    background: linear-gradient(135deg, #2F80FF 0%, #0069FF 100%) !important;
-    box-shadow: 0 7px 16px rgba(0,105,255,.20) !important;
-}
-
-[data-testid="stSidebar"] [data-testid="stPageLink"] a p,
-[data-testid="stSidebar"] [data-testid="stPageLink"] a span {
-    color: #5E6677 !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
-}
-
-[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current="page"] p,
-[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current="page"] span {
-    color: #FFFFFF !important;
-    font-weight: 800 !important;
 }
 
 [data-testid="stSidebar"] details {
@@ -209,8 +175,8 @@ SIDEBAR_CSS = """
 }
 
 [data-testid="stSidebar"] [data-baseweb="select"] > div:focus-within {
-    border-color: #0069FF !important;
-    box-shadow: 0 0 0 2px rgba(0,105,255,.10) !important;
+    border-color: #BB2649 !important;
+    box-shadow: 0 0 0 2px rgba(187,38,73,.12) !important;
 }
 
 [data-testid="stSidebar"] .stButton button,
@@ -223,17 +189,17 @@ SIDEBAR_CSS = """
 }
 
 [data-testid="stSidebar"] .stFormSubmitButton button {
-    border: 1px solid #BFD7FF !important;
-    color: #0069FF !important;
-    background: linear-gradient(135deg, #FFFFFF 0%, #EAF3FF 100%) !important;
-    box-shadow: 0 5px 12px rgba(0,105,255,.11) !important;
+    border: 1px solid #FFC3D4 !important;
+    color: #BB2649 !important;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFF0F4 100%) !important;
+    box-shadow: 0 5px 12px rgba(187,38,73,.11) !important;
 }
 
 [data-testid="stSidebar"] .stFormSubmitButton button:hover {
     color: #FFFFFF !important;
-    background: linear-gradient(135deg, #2F80FF 0%, #0069FF 100%) !important;
-    border-color: #0069FF !important;
-    box-shadow: 0 7px 16px rgba(0,105,255,.20) !important;
+    background: linear-gradient(135deg, #F35D74 0%, #BB2649 100%) !important;
+    border-color: #BB2649 !important;
+    box-shadow: 0 7px 16px rgba(187,38,73,.20) !important;
     transform: translateY(-1px);
 }
 
@@ -244,17 +210,17 @@ SIDEBAR_CSS = """
 }
 
 [data-testid="stSidebar"] .stButton button:hover {
-    color: #0069FF !important;
-    border-color: #BFD7FF !important;
-    background: #F4F8FF !important;
+    color: #BB2649 !important;
+    border-color: #FFC3D4 !important;
+    background: #FFF0F4 !important;
 }
 
 .cx-filter-summary {
     margin-top: 7px;
     padding: 8px 9px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(0,105,255,.07), rgba(187,38,73,.04));
-    border: 1px solid rgba(0,105,255,.08);
+    background: linear-gradient(135deg, rgba(187,38,73,.08), rgba(243,93,116,.05));
+    border: 1px solid rgba(187,38,73,.10);
 }
 
 .cx-filter-summary-title {
@@ -290,42 +256,30 @@ SIDEBAR_CSS = """
     box-shadow: 0 0 0 3px rgba(47,191,113,.12);
 }
 
-/* --- Custom Manual Nav --- */
-.cx-manual-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 4px 0 18px 0;
+/* --- Session-state navigation buttons --- */
+[data-testid="stSidebar"] div[data-testid="stButton"] {
+    margin-bottom: 4px;
+}
+[data-testid="stSidebar"] div[data-testid="stButton"]:has(button[kind="primary"]) button {
+    color: #FFFFFF !important;
+    background: linear-gradient(135deg, #F35D74 0%, #BB2649 100%) !important;
+    border-color: #BB2649 !important;
+    box-shadow: 0 7px 16px rgba(187,38,73,.20) !important;
+    transform: none !important;
 }
 
-.cx-manual-nav-link {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    min-height: 44px;
-    padding: 10px 13px;
-    border-radius: 11px;
-    border: 1px solid rgba(0,105,255,.10);
-    background: transparent;
+[data-testid="stSidebar"] div[data-testid="stButton"]:has(button[kind="secondary"]) button {
     color: #5E6677 !important;
-    text-decoration: none !important;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1.2;
-    transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease;
+    background: transparent !important;
+    border-color: rgba(187,38,73,.14) !important;
+    box-shadow: none !important;
 }
 
-.cx-manual-nav-link:hover {
-    background: #F3F7FF;
+[data-testid="stSidebar"] div[data-testid="stButton"]:has(button[kind="secondary"]) button:hover {
+    color: #BB2649 !important;
+    background: #FFF0F4 !important;
+    border-color: #FFC3D4 !important;
     transform: translateX(2px);
-    box-shadow: 0 7px 16px rgba(0,105,255,.10);
-    color: #0069FF !important;
-}
-
-.cx-manual-nav-link .material-symbols-rounded {
-    font-size: 21px;
-    color: #0069FF;
-    flex-shrink: 0;
 }
 
 [data-testid="stSidebarCollapseButton"],
@@ -383,6 +337,9 @@ def _initialize_state() -> None:
     if APPLIED_FILTER_KEY not in st.session_state:
         st.session_state[APPLIED_FILTER_KEY] = _default_filters()
 
+    if CURRENT_PAGE_KEY not in st.session_state:
+        st.session_state[CURRENT_PAGE_KEY] = DEFAULT_PAGE
+
 
 def _reset_filters() -> None:
     st.session_state[APPLIED_FILTER_KEY] = _default_filters()
@@ -391,6 +348,10 @@ def _reset_filters() -> None:
         widget_key = f"{FILTER_PREFIX}widget_{filter_name}"
         if widget_key in st.session_state:
             st.session_state[widget_key] = []
+
+
+def _navigate_to(page_name: str) -> None:
+    st.session_state[CURRENT_PAGE_KEY] = page_name
 
 
 def render_sidebar(df: pd.DataFrame | None = None) -> dict[str, list[str]]:
@@ -419,25 +380,37 @@ def render_sidebar(df: pd.DataFrame | None = None) -> dict[str, list[str]]:
             unsafe_allow_html=True,
         )
 
-        st.markdown(
-            """
-            <div class="cx-manual-nav">
-                <a class="cx-manual-nav-link" href="/page1" target="_self">
-                    <span class="material-symbols-rounded">groups</span>
-                    <span>Respondent Profile</span>
-                </a>
-                <a class="cx-manual-nav-link" href="/page2" target="_self">
-                    <span class="material-symbols-rounded">account_balance</span>
-                    <span>Bank XYZ Performance</span>
-                </a>
-                <a class="cx-manual-nav-link" href="/page3" target="_self">
-                    <span class="material-symbols-rounded">compare_arrows</span>
-                    <span>Competitor Performance</span>
-                </a>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        current_page = st.session_state.get(CURRENT_PAGE_KEY, DEFAULT_PAGE)
+
+        if st.button(
+            "Respondent Profile",
+            key="cx_nav_respondent_profile",
+            icon=":material/groups:",
+            type="primary" if current_page == "respondent_profile" else "secondary",
+            width="stretch",
+        ):
+            _navigate_to("respondent_profile")
+            st.rerun()
+
+        if st.button(
+            "Branch & Touchpoint Experience",
+            key="cx_nav_bank_performance",
+            icon=":material/account_balance:",
+            type="primary" if current_page == "bank_performance" else "secondary",
+            width="stretch",
+        ):
+            _navigate_to("bank_performance")
+            st.rerun()
+
+        if st.button(
+            "Competitor Performance",
+            key="cx_nav_competitor_performance",
+            icon=":material/compare_arrows:",
+            type="primary" if current_page == "competitor_performance" else "secondary",
+            width="stretch",
+        ):
+            _navigate_to("competitor_performance")
+            st.rerun()
 
         st.markdown(
             '<div class="cx-sidebar-section">Dashboard Filters</div>',

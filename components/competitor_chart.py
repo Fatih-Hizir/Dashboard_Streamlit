@@ -7,6 +7,29 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+import base64
+from pathlib import Path
+
+
+ASSET_DIR = Path(__file__).resolve().parents[1] / "assets"
+
+
+def _asset_data_uri(filename: str) -> str:
+    asset_path = ASSET_DIR / filename
+    if not asset_path.exists():
+        return ""
+    encoded = base64.b64encode(asset_path.read_bytes()).decode("utf-8")
+    return f"data:image/png;base64,{encoded}"
+
+
+def _kpi_asset(filename: str, alt_text: str) -> str:
+    uri = _asset_data_uri(filename)
+    if not uri:
+        return ""
+    return (
+        f'<img src="{uri}" alt="{alt_text}" '
+        'style="width:72px;height:72px;object-fit:contain;display:block;" />'
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -81,14 +104,18 @@ def render_competitor_kpis(df, df_mapping):
         avg_csi_competitor * 2 if avg_csi_competitor > 0 else 0
     )
 
-    def build_kpi_html(title, value, subtitle=""):
+    def build_kpi_html(icon_html, title, value, subtitle=""):
         return (
-            '<div style="display:flex;align-items:center;height:90px;width:100%;">'
+            '<div style="display:flex;align-items:center;gap:16px;min-height:116px;width:100%;padding:6px 2px;">'
+            '<div style="width:76px;height:76px;flex-shrink:0;'
+            'display:flex;align-items:center;justify-content:center;">'
+            f'{icon_html}'
+            '</div>'
             '<div style="display:flex;flex-direction:column;align-items:flex-start;'
             'justify-content:center;min-width:0;">'
-            f'<div class="kpi-title" style="margin-bottom:3px;">{title}</div>'
-            f'<div class="kpi-value-large" style="font-size:28px;line-height:1.1;">{value}</div>'
-            f'<div class="kpi-subtitle" style="margin-top:5px;">{subtitle}</div>'
+            f'<div class="kpi-title" style="margin-bottom:5px;white-space:normal;line-height:1.25;overflow-wrap:anywhere;">{title}</div>'
+            f'<div class="kpi-value-large" style="font-size:27px;line-height:1.1;white-space:nowrap;">{value}</div>'
+            f'<div class="kpi-subtitle" style="margin-top:6px;white-space:normal;line-height:1.3;overflow-wrap:anywhere;">{subtitle}</div>'
             "</div>"
             "</div>"
         )
@@ -99,6 +126,7 @@ def render_competitor_kpis(df, df_mapping):
         with st.container(key="kpi_comp_1"):
             st.markdown(
                 build_kpi_html(
+                    _kpi_asset("bank.png", "Total respondents"),
                     "Total Respondents",
                     f"{total_respondents:,}",
                     "All survey records",
@@ -110,6 +138,7 @@ def render_competitor_kpis(df, df_mapping):
         with st.container(key="kpi_comp_2"):
             st.markdown(
                 build_kpi_html(
+                    _kpi_asset("cabang.png", "Competitor banks"),
                     "Competitor Banks",
                     f"{total_competitor_banks}",
                     "Detected institutions",
@@ -121,6 +150,7 @@ def render_competitor_kpis(df, df_mapping):
         with st.container(key="kpi_comp_3"):
             st.markdown(
                 build_kpi_html(
+                    _kpi_asset("csi.png", "Customer satisfaction index"),
                     "Bank XYZ Avg. CSI",
                     f"{avg_csi_xyz:.2f}",
                     f"Competitor avg.: {avg_csi_competitor:.2f}",
@@ -132,6 +162,7 @@ def render_competitor_kpis(df, df_mapping):
         with st.container(key="kpi_comp_4"):
             st.markdown(
                 build_kpi_html(
+                    _kpi_asset("nps.png", "Average loyalty"),
                     "Bank XYZ Loyalty",
                     f"{loyalty_xyz:.2f}",
                     f"Competitor proxy: {competitor_loyalty_proxy:.2f}",
